@@ -1,0 +1,89 @@
+{
+  "project_name": "Workplace Safety Sentinel",
+  "track": "Track A - Perception (PipeGen)",
+  "version": "1.0.0",
+  "target_hardware": {
+    "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "runtime": "DeepStream 7.1 / TensorRT",
+    "precision_modes": ["FP32", "FP16", "INT8"]
+  },
+  "pipeline_ir": {
+    "nodes": [
+      {
+        "id": "source_0",
+        "type": "video_source",
+        "parameters": {
+          "source_type": "v4l2src",
+          "device": "/dev/video0",
+          "resolution": "1920x1080",
+          "framerate": 30
+        }
+      },
+      {
+        "id": "preprocess_0",
+        "type": "video_convert",
+        "parameters": {
+          "format": "RGBA",
+          "scaling_filter": "fast-bilinear"
+        }
+      },
+      {
+        "id": "detector_0",
+        "type": "nvinfer_primary",
+        "parameters": {
+          "model_type": "yolov8m",
+          "engine_file": "models/yolov8m_rtx4050_fp16.engine",
+          "batch_size": 1,
+          "confidence_threshold": 0.50,
+          "nms_iou_threshold": 0.45,
+          "target_classes": ["person"]
+        }
+      },
+      {
+        "id": "roi_analytics_0",
+        "type": "custom_analytics",
+        "parameters": {
+          "zone_name": "High-Voltage Exclusion Zone Alpha",
+          "polygon_vertices": [
+            [0.55, 0.35],
+            [0.95, 0.35],
+            [0.95, 0.90],
+            [0.55, 0.90]
+          ],
+          "dwell_time_threshold_sec": 0.5,
+          "alert_conditions": ["unauthorized_entry", "ppe_violation"]
+        }
+      },
+      {
+        "id": "mqtt_sink_0",
+        "type": "event_sink",
+        "parameters": {
+          "protocol": "mqtt",
+          "broker_host": "localhost",
+          "broker_port": 1883,
+          "topic": "factory/safety/alerts",
+          "qos": 1,
+          "payload_format": "json"
+        }
+      },
+      {
+        "id": "json_logger_0",
+        "type": "file_sink",
+        "parameters": {
+          "format": "json_lines",
+          "output_path": "incident_logs/workplace_incidents.json"
+        }
+      },
+      {
+        "id": "display_sink_0",
+        "type": "egl_sink",
+        "parameters": {
+          "sync": false,
+          "render_bounding_boxes": true,
+          "render_hazard_zones": true,
+          "render_telemetry_hud": true
+        }
+      }
+    ]
+  }
+}

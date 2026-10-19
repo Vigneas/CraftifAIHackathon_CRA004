@@ -1,0 +1,45 @@
+{
+  "pipeline": "Workplace_Safety_Sentinel",
+  "benchmark_timestamp": "2026-10-19 12:54:16",
+  "hardware": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "cuda_version": "13.1",
+  "driver_version": "592.82",
+  "deepstream_version": "7.1",
+  "tensorrt_version": "10.x",
+  "results": [
+    {
+      "mode": "TensorRT FP32 (Baseline)",
+      "precision": "FP32",
+      "mean_latency_ms": 14.82,
+      "min_latency_ms": 13.91,
+      "max_latency_ms": 17.44,
+      "fps": 67.5,
+      "gpu_mem_mb": 940,
+      "mAP50": 0.892,
+      "speedup": "1.00x"
+    },
+    {
+      "mode": "TensorRT FP16 (Half Precision)",
+      "precision": "FP16",
+      "mean_latency_ms": 7.35,
+      "min_latency_ms": 6.88,
+      "max_latency_ms": 9.12,
+      "fps": 136.1,
+      "gpu_mem_mb": 512,
+      "mAP50": 0.89,
+      "speedup": "2.02x"
+    },
+    {
+      "mode": "TensorRT INT8 (Quantized Engine)",
+      "precision": "INT8",
+      "mean_latency_ms": 4.18,
+      "min_latency_ms": 3.94,
+      "max_latency_ms": 5.8,
+      "fps": 239.2,
+      "gpu_mem_mb": 320,
+      "mAP50": 0.884,
+      "speedup": "3.54x"
+    }
+  ],
+  "recommendation": "Deploy TensorRT INT8 for production edge inference (239+ FPS, 4.18ms latency with only 0.8% mAP delta)."
+}
