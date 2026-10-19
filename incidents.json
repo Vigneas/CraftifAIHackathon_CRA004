@@ -1,0 +1,1 @@
+{"event_type": "HAZARD_ZONE_BREACH", "timestamp": "2026-10-19T13:11:22.508943", "pipeline": "Workplace_Safety_Sentinel_v1", "zone_id": "ZONE_DANGER_ALPHA", "person_id": 1, "coordinates": {"x": 700, "y": 300}, "bounding_box": {"x": 650, "y": 200, "w": 100, "h": 200}, "confidence": 0.97, "precision_mode": "TensorRT INT8", "status": "CRITICAL_VIOLATION"}

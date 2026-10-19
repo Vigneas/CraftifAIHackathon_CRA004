@@ -9,12 +9,12 @@ echo.
 net session >nul 2>&1
 if %errorLevel% neq 0 (
     echo [!] Administrator permissions required.
-    echo [!] Requesting administrative privileges...
-    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    echo [!] Please right-click this file and select 'Run as administrator'.
+    pause
     exit /b
 )
 
-echo [+] Running with Administrator privileges.
+echo [+] Verified Administrator privileges!
 echo.
 
 :: Step 1: Create WSL Directory on Drive D
@@ -29,12 +29,12 @@ dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux 
 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
 
 :: Step 3: Install or Update WSL2 with Ubuntu
-echo [+] Installing Ubuntu 22.04 on WSL2...
+echo [+] Installing Ubuntu on WSL2...
 wsl.exe --install -d Ubuntu-22.04 --no-launch
 
 echo.
 echo ========================================================
-echo   WSL2 features have been activated!
-echo   If Windows requires a restart, please restart now.
+echo   [SUCCESS] WSL2 features and Ubuntu have been installed!
+echo   If Windows requires a system restart, restart now.
 echo ========================================================
 pause

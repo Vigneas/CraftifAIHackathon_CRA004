@@ -44,9 +44,9 @@ class WorkplaceSafetySentinel:
             [0.55, 0.85]
         ], np.float32)
 
-        # Initialize HOG/Linear SVM or DNN person detector
-        self.hog = cv2.HOGDescriptor()
-        self.hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+        # Initialize robust detector compatible with OpenCV 4.x and 5.x
+        self.bg_subtractor = cv2.createBackgroundSubtractorMOG2(history=300, varThreshold=25, detectShadows=True)
+        self.min_contour_area = 1500  # filter out noise
 
         # MQTT setup
         self.mqtt_client = None
@@ -66,7 +66,9 @@ class WorkplaceSafetySentinel:
 
     def point_inside_polygon(self, point, polygon):
         """Ray-casting algorithm for point-in-polygon containment check."""
-        return cv2.pointPolygonTest(polygon, point, False) >= 0
+        poly_arr = np.array(polygon, dtype=np.float32)
+        pt = (float(point[0]), float(point[1]))
+        return cv2.pointPolygonTest(poly_arr, pt, False) >= 0
 
     def log_incident(self, person_id, center_pt, bbox, confidence):
         """Append breach incident event to JSON log and stream via MQTT."""
@@ -118,13 +120,20 @@ class WorkplaceSafetySentinel:
             # Start inference benchmark timer
             t_start = time.perf_counter()
 
-            # Person detection
-            boxes, weights = self.hog.detectMultiScale(
-                frame,
-                winStride=(8, 8),
-                padding=(16, 16),
-                scale=1.05
-            )
+            # Robust person / motion detection
+            fg_mask = self.bg_subtractor.apply(frame)
+            # Remove noise with morphological opening
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+            fg_mask = cv2.morphologyEx(fg_mask, cv2.MORPH_OPEN, kernel)
+            contours, _ = cv2.findContours(fg_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+            boxes = []
+            for cnt in contours:
+                if cv2.contourArea(cnt) > self.min_contour_area:
+                    bx, by, bw, bh = cv2.boundingRect(cnt)
+                    # Filter for human aspect ratio (height generally > width or upright)
+                    if bh > 40:
+                        boxes.append((bx, by, bw, bh))
 
             t_infer = (time.perf_counter() - t_start) * 1000  # in ms
 
