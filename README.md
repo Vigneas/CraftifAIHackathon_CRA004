@@ -1,6 +1,5 @@
 # 🛡️ Workplace Safety Sentinel (Physical AI Perception Pipeline)
 
-> **Hack With Bangalore 4.0 | Embedded SF: CraftifAI Physical AI Hackathon**  
 > **Track A: PipeGen (Perception)** | **Target: NVIDIA GeForce RTX 4050 Laptop GPU**
 
 ---
@@ -18,6 +17,8 @@ Industrial manufacturing environments frequently suffer from workplace safety in
 > *"Industrial Workplace Safety Sentinel: Build a real-time edge vision pipeline detecting workers and PPE from a camera stream. Define a restricted perimeter hazard zone. Trigger an immediate violation alert if an unauthorized person enters the zone. Output bounding boxes on screen, generate incident JSON event logs with timestamps, and publish alert payloads to an MQTT broker. Optimize for NVIDIA GPU inference."*
 
 ### Stage 2: Pipeline IR (Intermediate Representation)
+![PipeGen Pipeline IR Node Graph](pipeline_ir_graph.png)
+
 The pipeline is specified in [`pipeline_ir.json`](file:///d:/Bangalore%204.0/pipeline_ir.json):
 ```
 [Video Source (Webcam/V4L2)] 
@@ -38,6 +39,8 @@ The pipeline is specified in [`pipeline_ir.json`](file:///d:/Bangalore%204.0/pip
 - Classes Tracked: `person` (Worker detection with foot-point grounding)
 
 ### Stage 4: Compiler Stage & TensorRT Benchmarking
+![TensorRT Speed Report](tensorrt_speed_report.png)
+
 Compiled using TensorRT 10.x on NVIDIA Ada Lovelace RTX 4050 Laptop GPU across FP32, FP16, and INT8 precision modes:
 
 | Precision Mode | Latency (ms) | Throughput (FPS) | VRAM Usage | mAP@50 | Speedup |
@@ -80,10 +83,3 @@ python mqtt_alert_listener.py
 - [`2_configure_pipegen_ubuntu.sh`](file:///d:/Bangalore%204.0/2_configure_pipegen_ubuntu.sh): Automated Ubuntu setup script installing Docker, NVIDIA Container Toolkit, socat, and PipeGen package.
 
 ---
-
-## 📝 5. Submission Details
-- **Submission Form**: [Google Form (PipeGen Track)](https://forms.gle/eJyeCKCG2UH757QZ8)
-- **Artifacts Included**:
-  1. [`pipeline_ir.json`](file:///d:/Bangalore%204.0/pipeline_ir.json) - Pipeline Node Graph specification.
-  2. [`TENSORRT_SPEED_REPORT.json`](file:///d:/Bangalore%204.0/TENSORRT_SPEED_REPORT.json) - TensorRT benchmark data.
-  3. [`safety_sentinel_app.py`](file:///d:/Bangalore%204.0/safety_sentinel_app.py) - Working pipeline application.
