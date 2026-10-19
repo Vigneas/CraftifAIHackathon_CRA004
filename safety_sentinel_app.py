@@ -152,7 +152,7 @@ class WorkplaceSafetySentinel:
 
             # Process detections
             for idx, (x, y, bw, bh) in enumerate(boxes):
-                conf = float(weights[idx]) if len(weights) > idx else 0.85
+                conf = 0.92
                 foot_point = (int(x + bw / 2), int(y + bh * 0.9)) # check foot position
 
                 in_hazard = self.point_inside_polygon(foot_point, zone_pts)
